@@ -1,11 +1,15 @@
 import './styles/App.css'
 import Card from './components/Card'
+
+import FaceUpload from './components/FaceUpload'
+
 import questions from './questions.json'
 import CardContent from './components/CardContent';
 import { useState } from 'react';
 import FinishCard from './components/FinishCard';
 import DeletionModal from './components/DeletionModal';
 let responsesObj = [{ "field": "", "value": "" }];
+
 
 export default function name() {
 
@@ -46,6 +50,8 @@ export default function name() {
 
   return (
     <div>
+      <FaceUpload />
+
       {showModal ? (
         <DeletionModal></DeletionModal>
       ) :
