@@ -1,22 +1,35 @@
 import './styles/App.css'
 import Card from './components/Card'
 import questions from './questions.json'
+import CardContent from './components/CardContent';
+import { useState } from 'react';
 
 export default function name() {
 
   const questionsQtt = questions.length;
-  let questionIndex = 0;
+  const [questionIndex, setQuestionIndex] = useState(0);
   let questionsObj = questions;
 
   function cardInteraction(msg:string) {
-    console.log(msg);
+    if (msg === 'next') {
+      if (questionIndex < questionsQtt - 1) {
+        setQuestionIndex(questionIndex + 1);
+      }
+    } else if (msg === 'previous') {
+      if (questionIndex > 0) {
+        setQuestionIndex(questionIndex - 1);
+      }
+    }
   }
-
-  let CardContent = <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi dicta sit modi exercitationem minus in reprehenderit explicabo illum quaerat maxime vitae mollitia expedita, harum asperiores minima voluptatum nemo ad excepturi.</p>
 
   return (
     <div>
-      <Card Progress={2} Fallback={(msg:string) => cardInteraction(msg)} CardContent={CardContent}></Card>
+      <Card
+        Progress={questionIndex + 1}
+        Points={questionsQtt}
+        CardContent={<CardContent Text={questionsObj.at(questionIndex).text} />}
+        Fallback={(msg:string) => cardInteraction(msg)}
+      />
     </div>
   )
 }

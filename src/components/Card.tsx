@@ -9,15 +9,18 @@ type Props = {
     CardContent: JSX.Element;
     Fallback: (msg:string) => void;
     Progress: number;
+    Points: number;
 }
 
-export default function Card({CardContent, Fallback, Progress} : Props) {
-    let previousBtn: JSX.Element = null;
+export default function Card({CardContent, Fallback, Progress, Points} : Props) {
+    let previousBtn: JSX.Element = <></>;
+    let btnDivClasses = 'flex items-center justify-between w-full gap-5'
 
     if (Progress > 1) {
         previousBtn = <Btn IconLeft Fallback={() => Fallback('previous')} Icon={ArrowLeftIcon} Text='Anterior' Size={32} />
     } else {
         previousBtn = <></>
+        btnDivClasses += ' justify-end'
     }
 
     return (
@@ -32,12 +35,12 @@ export default function Card({CardContent, Fallback, Progress} : Props) {
                     </div>
                     <div className='w-1/2 min-w-50 xl:min-w-100 xl:text-2xl flex flex-col gap-5'>
                         <div>
-                            <ProgressBar points={5} progress={Progress}></ProgressBar>
+                            <ProgressBar points={Points} progress={Progress}></ProgressBar>
                         </div>
                         <div className='backdrop-blur-[2px] text-md bg-dark-green-50 p-5 rounded-xl'>
                             {CardContent}
                         </div>
-                        <div className='flex items-center justify-between w-full'>
+                        <div className={btnDivClasses}>
                             {previousBtn}
                             <Btn Fallback={() => Fallback('next')} Icon={ArrowRightIcon} Text='Próximo' Size={32} />
                         </div>
