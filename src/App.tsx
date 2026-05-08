@@ -27,7 +27,7 @@ export default function name() {
       <Card
         Progress={questionIndex + 1}
         Points={questionsQtt}
-        CardContent={<CardContent Text={questionsObj.at(questionIndex).text} />}
+        CardContent={<CardContent Text={questionsObj.at(questionIndex)?.text ?? 'null text'} />}
         Fallback={(msg:string) => cardInteraction(msg)}
       />
     </div>
