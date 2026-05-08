@@ -15,7 +15,7 @@ export default function Card() {
                     </div>
                 </div>
                 <div className='flex items-center justify-end w-full'>
-                    <Btn Icon={ArrowRightIcon} Text='Próximo' Size={32} />
+                    <Btn Icon={ArrowRightIcon} Text='Próximos' Size={32} />
                 </div>
             </div>
         </div>
