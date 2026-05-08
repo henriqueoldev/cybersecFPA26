@@ -3,14 +3,19 @@ import Card from './components/Card'
 import questions from './questions.json'
 import CardContent from './components/CardContent';
 import { useState } from 'react';
+import FinishCard from './components/FinishCard';
+import DeletionModal from './components/DeletionModal';
+let responsesObj = [{ "field": "", "value": "" }];
 
 export default function name() {
 
   const questionsQtt = questions.length;
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [isFinished, setIsFinished] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   let questionsObj = questions;
 
-  function cardInteraction(msg:string) {
+  function cardInteraction(msg: string) {
     let userInput = document.getElementById('userInput') as HTMLInputElement | null;
     let inputValue = ''
     if (msg === 'next') {
@@ -18,11 +23,19 @@ export default function name() {
         if (userInput) {
           inputValue = userInput.value
           userInput.value = ''
-          console.log(inputValue);
+          responsesObj.push({
+            "field": questionsObj.at(questionIndex)?.field ?? '',
+            "value": inputValue
+          })
         }
         if (inputValue !== '' || userInput == null) {
           setQuestionIndex(questionIndex + 1);
         }
+      } else {
+        responsesObj.shift()
+        setIsFinished(true);
+        console.log(isFinished);
+
       }
     } else if (msg === 'previous') {
       if (questionIndex > 0) {
@@ -33,15 +46,26 @@ export default function name() {
 
   return (
     <div>
-      <Card
-        Progress={questionIndex + 1}
-        Points={questionsQtt}
-        CardContent={
-          <CardContent Text={questionsObj.at(questionIndex)?.text ?? 'null text'}
-          Placeholder={questionsObj.at(questionIndex)?.field ?? null}
-        />}
-        Fallback={(msg:string) => cardInteraction(msg)}
-      />
+      {showModal ? (
+        <DeletionModal></DeletionModal>
+      ) :
+        <></>
+      }
+      {
+        !isFinished ? (
+          <Card
+            Progress={questionIndex + 1}
+            Points={questionsQtt}
+            CardContent={
+              <CardContent Text={questionsObj.at(questionIndex)?.text ?? 'null text'}
+                Placeholder={questionsObj.at(questionIndex)?.field ?? null}
+              />}
+            Fallback={(msg: string) => cardInteraction(msg)}
+          />
+        ) : (
+          <FinishCard Fallback={() => {setShowModal(true)}} Responses={responsesObj}></FinishCard>
+        )
+      }
     </div>
   )
 }
