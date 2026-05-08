@@ -11,9 +11,18 @@ export default function name() {
   let questionsObj = questions;
 
   function cardInteraction(msg:string) {
+    let userInput = document.getElementById('userInput') as HTMLInputElement | null;
+    let inputValue = ''
     if (msg === 'next') {
       if (questionIndex < questionsQtt - 1) {
-        setQuestionIndex(questionIndex + 1);
+        if (userInput) {
+          inputValue = userInput.value
+          userInput.value = ''
+          console.log(inputValue);
+        }
+        if (inputValue !== '' || userInput == null) {
+          setQuestionIndex(questionIndex + 1);
+        }
       }
     } else if (msg === 'previous') {
       if (questionIndex > 0) {
@@ -27,7 +36,10 @@ export default function name() {
       <Card
         Progress={questionIndex + 1}
         Points={questionsQtt}
-        CardContent={<CardContent Text={questionsObj.at(questionIndex)?.text ?? 'null text'} />}
+        CardContent={
+          <CardContent Text={questionsObj.at(questionIndex)?.text ?? 'null text'}
+          Placeholder={questionsObj.at(questionIndex)?.field ?? null}
+        />}
         Fallback={(msg:string) => cardInteraction(msg)}
       />
     </div>

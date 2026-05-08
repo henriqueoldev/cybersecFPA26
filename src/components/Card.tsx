@@ -24,13 +24,18 @@ export default function Card({CardContent, Fallback, Progress, Points} : Props) 
     }
 
     return (
-        <div className="border-4 rounded-xl p-8 border-secondary bg-dark-green text-white max-w-252">
+        <div className="transition duration-2000 border-4 rounded-xl p-8 border-secondary bg-dark-green text-white max-w-252">
             <div>
                 <img className='absolute max-w-[40%] z-2 bg-dark-green border-secondary border-r-4 border-b-4 p-3 pt-0 pr-16 rounded-br-full' src={Logo} alt="" />
             </div>
             <div className='bg-Matrix p-10 border-secondary border-4 rounded-xl gap-5 flex flex-col'>
                 <div className='flex items-center justify-around'>
-                    <div className='flex justify-center items-center h-100'>
+                    <div className='flex justify-center items-center h-100 relative'>
+                        <div className='absolute flex items-end z-3 h-[80%] justify-center'>
+                            <div className='px-10 p-3 bg-dark-green-50 rounded-xl backdrop-blur-[5px] rounded-tl-4xl rounded-br-4xl border-b-accent border-b-5'>
+                                <h3 className='z-3 bottom-0 xl:text-2xl text-md font-bold'>CLIPPY</h3>
+                            </div>
+                        </div>
                         <img id='Clippy' className='xl:max-w-64 max-w-48' src={ClippyImg} alt="" />
                     </div>
                     <div className='w-1/2 min-w-50 xl:min-w-100 xl:text-2xl flex flex-col gap-5'>

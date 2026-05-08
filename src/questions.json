@@ -4,10 +4,12 @@
     },
     {
         "text": "Para começarmos, que tal me dizer seu nome? :)",
+        "field": "Nome",
         "resp": ""
     },
     {
         "text": "UAU, que nome lindo! estou ansioso para saber seu sobrenome, pode me contar?",
+        "field": "Sobrenome",
         "resp": ""
     },
     {
@@ -15,14 +17,17 @@
     },
     {
         "text": "Agora, você topa me contar sua idade? Prometo não julgar — só quero adaptar a dinâmica pra você",
+        "field": "Idade",
         "resp": ""
     },
     {
         "text": "Quase lá! Me diz seu CEP rapidinho pra eu ter uma ideia da sua região (aposto que é na ZL).",
+        "field": "CEP",
         "resp": ""
     },
     {
         "text": "Última perguntinha: qual é o número da sua casa/apto? (só o número mesmo)",
+        "field": "Nº",
         "resp": ""
     },
     {
