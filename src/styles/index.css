@@ -33,3 +33,16 @@ body{
     align-items: center;
     overflow: hidden;
 }
+
+#Clippy{
+    animation: ClippyAnim 2s alternate ease-in-out infinite;
+}
+
+@keyframes ClippyAnim {
+    0%{
+        transform: rotate(-8deg);
+    }
+    100%{
+        transform: rotate(8deg);
+    }
+}
