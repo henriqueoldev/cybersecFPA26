@@ -2,9 +2,9 @@
 
 @theme {
     --color-primary: #6F74A9;
-    --color-primary-50: rgba(111,116,169,0.59);
+    --color-primary-50: rgba(111, 116, 169, 0.59);
     --color-secondary: #1a5b74;
-    --color-secondary-50: rgba(26,91,116,0.59);
+    --color-secondary-50: rgba(26, 91, 116, 0.59);
 
     --color-accent: #8347CC;
     --color-accent-100: #8347CC;
@@ -12,24 +12,66 @@
     --color-cyan: #74E2F1;
 
     --color-dark-green: #2C2E43;
-    --color-dark-green-50: rgba(44,46,67,0.59);
+    --color-dark-green-50: rgba(44, 46, 67, 0.59);
 
-    --text-muted: rgba(230,235,255,0.65);
+    --text-muted: rgba(230, 235, 255, 0.65);
 
     --link: var(--color-cyan);
     --success: #1A5B74;
-    --focus-ring: rgba(131,71,204,0.22);
+    --focus-ring: rgba(131, 71, 204, 0.22);
 }
 
-.bg-Matrix{
+@font-face {
+    font-family: "GohuNerdMono";
+    src: url("/src/assets/fonts/GohuFont11NerdFontMono-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+000-10FFFF;
+}
+
+@font-face {
+    font-family: "HackNerdMono";
+    src: url("/src/assets/fonts/HackNerdFontMono-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+000-10FFFF;
+}
+
+@font-face {
+    font-family: "HackNerdMono";
+    src: url("/src/assets/fonts/HackNerdFontMono-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+000-10FFFF;
+}
+
+.bg-Matrix {
     background-image: url(/src/assets/matrix.png);
 }
 
-body{
+body {
     display: flex;
     height: 100vh;
     width: 100vw;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    font-family: "HackNerdMono", 'Times New Roman', Times, serif;
+}
+
+#Clippy {
+    animation: ClippyAnim 2s alternate ease-in-out infinite;
+}
+
+@keyframes ClippyAnim {
+    0% {
+        transform: rotate(-8deg);
+    }
+
+    100% {
+        transform: rotate(8deg);
+    }
 }
