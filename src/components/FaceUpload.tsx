@@ -1,66 +1,21 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
-export default function FaceUpload() {
-  const [image, setImage] = useState<string | null>(null);
+type Props = {
+  onFaceCaptured?: (id: string) => void;
+};
+
+export default function FaceUpload({ onFaceCaptured }: Props) {
   const [loading, setLoading] = useState(false);
+  const [faceId, setFaceId] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
-  const imgRef = useRef<HTMLImageElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const meshRef = useRef<any>(null);
+  const processingRef = useRef(false);
+  const startedRef = useRef(false);
 
-  const drawMesh = (landmarks: any[]) => {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    const img = imgRef.current!;
-
-    canvas.width = img.width;
-    canvas.height = img.height;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-    // LINHAS (malha)
-    (window as any).drawConnectors(
-      ctx,
-      landmarks,
-      (window as any).FACEMESH_TESSELATION,
-      {
-        color: "rgba(0,255,0,0.9)",
-        lineWidth: 0.5,
-        radius: 0.5
-      }
-    );
-
-    // PONTOS pequenos por cima
-    (window as any).drawLandmarks(ctx, landmarks, {
-      color: "rgba(255,0,0,0.9)",
-      lineWidth: 0.5,
-      radius: 0.5
-    });
-  };
-
-  const drawPoints = (landmarks: any[]) => {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    const img = imgRef.current!;
-
-    canvas.width = img.width;
-    canvas.height = img.height;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // desenha pontos
-    landmarks.forEach((point) => {
-      const x = point.x * canvas.width;
-      const y = point.y * canvas.height;
-
-      ctx.beginPath();
-      ctx.arc(x, y, 2, 0, 2 * Math.PI);
-      ctx.fillStyle = "#00FF00";
-      ctx.fill();
-    });
-  };
-
-  const processImage = async (img: HTMLImageElement) => {
+  useEffect(() => {
     const mesh = new (window as any).FaceMesh({
       locateFile: (file: string) =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
@@ -71,8 +26,74 @@ export default function FaceUpload() {
       refineLandmarks: true,
     });
 
+    meshRef.current = mesh;
+
+    return () => {
+      meshRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    startCameraAndCapture();
+  }, []);
+
+  const generateFaceId = (landmarks: any[]) => {
+    const simplified = landmarks.map((p) => [
+      Number(p.x.toFixed(3)),
+      Number(p.y.toFixed(3)),
+      Number(p.z.toFixed(3)),
+    ]);
+
+    const str = JSON.stringify(simplified);
+
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash |= 0;
+    }
+
+    return `FACE-${Math.abs(hash)}`;
+  };
+
+  const drawMesh = (landmarks: any[]) => {
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext("2d")!;
+    const video = videoRef.current!;
+
+    const width = video.clientWidth;
+    const height = video.clientHeight;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    (window as any).drawConnectors(
+      ctx,
+      landmarks,
+      (window as any).FACEMESH_TESSELATION,
+      { color: "rgba(0,255,0,0.4)", lineWidth: 0.1 }
+    );
+
+    (window as any).drawLandmarks(ctx, landmarks, {
+      color: "rgba(255,0,0,0.4)",
+      radius: 0.3,
+    });
+  };
+
+  const processImage = async (img: HTMLImageElement) => {
+    const mesh = meshRef.current;
+    if (!mesh || processingRef.current) return null;
+
+    processingRef.current = true;
+
     return new Promise<any>((resolve) => {
       mesh.onResults((results: any) => {
+        processingRef.current = false;
+
         if (results.multiFaceLandmarks?.length > 0) {
           resolve(results.multiFaceLandmarks[0]);
         } else {
@@ -80,63 +101,116 @@ export default function FaceUpload() {
         }
       });
 
-      mesh.send({ image: img });
+      try {
+        mesh.send({ image: img });
+      } catch {
+        processingRef.current = false;
+        resolve(null);
+      }
     });
   };
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const capturePhoto = async () => {
+    const video = videoRef.current!;
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext("2d")!;
 
-    const url = URL.createObjectURL(file);
-    setImage(url);
-    setLoading(true);
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx.drawImage(video, 0, 0, width, height);
 
     const img = new Image();
-    img.src = url;
+    img.src = canvas.toDataURL("image/png");
+
+    setLoading(true);
 
     img.onload = async () => {
       const landmarks = await processImage(img);
 
-      if (!landmarks) {
+      if (!landmarks || !Array.isArray(landmarks)) {
         alert("Nenhum rosto detectado");
         setLoading(false);
         return;
       }
 
-      console.log("Landmarks:", landmarks);
-
       drawMesh(landmarks);
 
+      const id = generateFaceId(landmarks);
+      setFaceId(id);
+
+      // 🔥 ESSENCIAL
+      onFaceCaptured?.(id);
+
       setLoading(false);
+
+      const stream = video.srcObject as MediaStream;
+      stream?.getTracks().forEach((track) => track.stop());
     };
   };
 
+  const startCameraAndCapture = async () => {
+    try {
+      setFaceId(null);
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+
+      let time = 3;
+      setCountdown(time);
+
+      const interval = setInterval(() => {
+        time--;
+        setCountdown(time);
+
+        if (time === 0) {
+          clearInterval(interval);
+          setCountdown(null);
+          capturePhoto();
+        }
+      }, 1000);
+    } catch {
+      alert("Permita o uso da câmera");
+    }
+  };
+
   return (
-    <div className="bg-dark-green p-6 rounded-xl text-white">
-      <h2 className="text-xl mb-4">Upload de rosto</h2>
+    <div className="bg-dark-green p-6 rounded-xl text-white text-center">
+      <h2 className="text-sm mb-4">Reconhecimento facial</h2>
 
-      <input type="file" accept="image/*" onChange={handleFile} />
+      <div style={{ position: "relative" }}>
+        <video ref={videoRef} className="max-w-64 w-full rounded mx-auto" />
 
-      {loading && <p>Processando...</p>}
+        <canvas
+          ref={canvasRef}
+          className="max-w-64 w-full"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+        />
+      </div>
 
-      {image && (
-        <div style={{ position: "relative" }}>
-          <img
-            src={image}
-            ref={imgRef}
-            alt="preview"
-            className="max-w-128 rounded"
-          />
+      {countdown !== null && countdown > 0 && (
+        <div className="text-4xl mt-4 font-bold">{countdown}</div>
+      )}
 
-          <canvas
-            ref={canvasRef}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-            }}
-          />
+      {loading && <p className="text-sm mt-2">Processando...</p>}
+
+      {faceId && (
+        <div className="mt-4 bg-black p-2 rounded text-green-400 text-xs font-mono">
+          Face ID: {faceId}
         </div>
       )}
     </div>
