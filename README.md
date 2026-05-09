@@ -121,7 +121,8 @@ Toda a execução ocorre **client-side**, com objetivo exclusivamente educaciona
 Projeto desenvolvido por:
 - Raphael Cardoso  
 - Henrique Oliveira
-FATEC Zona Leste — Análise e Desenvolvimento de Sistemas
+
+##FATEC Zona Leste — Análise e Desenvolvimento de Sistemas
 
 ---
 
