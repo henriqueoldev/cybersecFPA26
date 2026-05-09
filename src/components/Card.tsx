@@ -24,7 +24,7 @@ export default function Card({CardContent, Fallback, Progress, Points} : Props) 
     }
 
     return (
-        <div className="transition duration-2000 border-4 rounded-xl p-8 border-secondary bg-dark-green text-white max-w-252">
+        <div className="transition duration-2000 border-4 rounded-xl p-8 border-secondary bg-dark-green text-white w-256">
             <div>
                 <img className='absolute max-w-[40%] z-2 bg-dark-green border-secondary border-r-4 border-b-4 p-3 pt-0 pr-16 rounded-br-full' src={Logo} alt="" />
             </div>

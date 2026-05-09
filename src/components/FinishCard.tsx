@@ -8,7 +8,7 @@ type Response = { field: string; value: string; };
 type Props = {
   Responses: Response[];
   Fallback: () => void;
-  FaceId?: string | null; // 🔥 novo
+  FaceId?: string | null;
 };
 
 export default function FinishCard({ Responses, Fallback, FaceId }: Props) {
@@ -52,17 +52,19 @@ export default function FinishCard({ Responses, Fallback, FaceId }: Props) {
         }
       }
 
-      // 🔥 FACE ID
-      parts.push('------------------------------------FACE ID------------------------------------')
-
+      parts.push('\n');
+      parts.push('------------------------------------FACE ID----------------------------------------')
+      parts.push('\n');
       if (FaceId) {
         parts.push(`face_id: ${FaceId}`);
+        parts.push('Essa é a sua biometria facial, seu dado mais sensível. Evite que ela seja registrada sempre que possível.');
       } else {
         parts.push('face_id: não capturado');
       }
-
-      // 🔥 fingerprint
+      
+      parts.push('\n');
       parts.push('------------------------------------FINGERPRINT------------------------------------')
+      parts.push('\n');
       let fp = await fingerprint();
       Object.entries(fp).forEach(([k, v]) => parts.push(`${k}: ${v}`));
 

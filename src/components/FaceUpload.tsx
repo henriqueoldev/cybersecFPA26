@@ -141,6 +141,7 @@ export default function FaceUpload({ onFaceCaptured }: Props) {
 
       const id = generateFaceId(landmarks);
       setFaceId(id);
+      console.log(faceId)
 
       // 🔥 ESSENCIAL
       onFaceCaptured?.(id);
@@ -184,21 +185,15 @@ export default function FaceUpload({ onFaceCaptured }: Props) {
   };
 
   return (
-    <div className="bg-dark-green p-6 rounded-xl text-white text-center">
+    <div className="rounded-xl text-white font-bold text-center">
       <h2 className="text-sm mb-4">Reconhecimento facial</h2>
 
-      <div style={{ position: "relative" }}>
-        <video ref={videoRef} className="max-w-64 w-full rounded mx-auto" />
+      <div className="relative rounded-xl overflow-hidden">
+        <video ref={videoRef} className="max-w-64 w-full rounded-xl mx-auto" />
 
         <canvas
           ref={canvasRef}
-          className="max-w-64 w-full"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: "50%",
-            transform: "translateX(-50%)",
-          }}
+          className="max-w-64 w-full absolute top-0 left-[50%] translate-x-[-50%]"
         />
       </div>
 
@@ -207,12 +202,6 @@ export default function FaceUpload({ onFaceCaptured }: Props) {
       )}
 
       {loading && <p className="text-sm mt-2">Processando...</p>}
-
-      {faceId && (
-        <div className="mt-4 bg-black p-2 rounded text-green-400 text-xs font-mono">
-          Face ID: {faceId}
-        </div>
-      )}
     </div>
   );
 }
