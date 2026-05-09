@@ -19,6 +19,7 @@ export default function FinishCard({ Responses, Fallback, FaceId }: Props) {
       const parts: string[] = [];
 
       parts.push('---------------------------------------DADOS---------------------------------------')
+      parts.push('\n');
 
       for (const resp of Responses) {
         if (resp.field.toLowerCase() === "nome" && resp.value) {
